@@ -1,0 +1,26 @@
+{
+ :global
+ {
+  :logging-config "./dev-resources/logback-dev.xml"
+  }
+
+ :webserver
+ {
+  :host "localhost"
+  :port 8080
+  }
+
+:web-router-service
+ {
+  :fi.ruuvitracker.server-web-service/hello-web-service "/hello"
+  ;; set to ""
+  :fi.ruuvitracker.api-service/api-web-service ""
+  }
+
+ :nrepl
+ {
+   :port 12345
+   :enabled true
+   :middlewares ["lighttable.nrepl.handler/lighttable-ops"]
+  }
+ }
