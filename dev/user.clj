@@ -8,6 +8,9 @@
             [fi.ruuvitracker.api-service
              :refer [api-web-service]]
 
+            [fi.ruuvitracker.event-web-service
+             :refer [event-service]]
+
             [fi.ruuvitracker.database.migration
               :refer [database-migrator]]
             [puppetlabs.trapperkeeper.core :as tk]
@@ -58,6 +61,7 @@
                              webrouting-service
                              hello-service
                              api-web-service
+                             event-service
                              database-migrator]
                             config)))
   (alter-var-root #'system tka/init)

@@ -1,5 +1,5 @@
 (ns fi.ruuvitracker.api-service
-  (:require [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :refer (trace debug info warn error) :as log]
             [puppetlabs.trapperkeeper.core :as trapperkeeper]
             [compojure.api.sweet :refer [defapi GET* POST* PUT* context swaggered swagger-ui swagger-docs defroutes*]]
             [schema.core :as s]
@@ -12,17 +12,20 @@
 (trapperkeeper/defservice api-web-service
   [[:ConfigService get-in-config]
    [:WebroutingService add-ring-handler get-route]
+   EventService
    ]
 
   (init [this context]
     (log/info "Initializing api webservice")
-    (let [url-prefix (get-route this)]
-
-        (add-ring-handler
-         this
-         (compojure/context url-prefix []
-                            api
-                            ))
+    (let [url-prefix (get-route this)
+          ;; this fetches actual service implementation
+          ;; EventService is just a map to all functions in service
+          event-service (tk-services/get-service this :EventService)]
+      (add-ring-handler
+       this
+       (compojure/context url-prefix []
+                          (api event-service)
+                          ))
 
 
       (assoc context :url-prefix url-prefix)))
