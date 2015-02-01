@@ -38,7 +38,7 @@
      (assoc context :pool {:datasource (make-hikari-pool db-spec)})))
 
   (stop [this context]
-        (let [pool (-> context :pool)]
+        (let [pool (-> (tk-services/service-context this) :pool)]
           (.shutdown pool)
           (dissoc context :pool)))
   (open-connection

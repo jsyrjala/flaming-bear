@@ -3,11 +3,14 @@
              ;; dont remove anything from here
              [defapi defroutes* swagger-ui swagger-docs swaggered context
               GET* POST* DELETE*]]
-
+            [compojure.api.middleware :refer [api-middleware]]
+            [compojure.api.core :refer [middlewares]]
+            [compojure.core :refer [defroutes]]
+            [compojure.api.routes :as routes]
             [schema.core :refer [optional-key enum] :as schema]
             [ring.swagger.schema :refer [field]]
             [ring.util.http-response :refer
-             [ok not-found! unauthorized unauthorized! bad-request!]]
+             [ok not-found! internal-server-error conflict! unauthorized unauthorized! bad-request!]]
 
             [fi.ruuvitracker.api.domain
              :refer
@@ -97,33 +100,34 @@
                  (not-found! "not implemented yet")))
   )
 
-(defapi api-routes
-  (swagger-ui "/")
-  (swagger-docs "/api/api-docs"
-                :title "RuuviTracker REST API"
-                :apiVersion "v1-dev"
-                :description "RuuviTracker is an OpenSource Tracking System. See http://www.ruuvitracker.fi/ for more details."
-                :termsOfServiceUrl nil
-                :contact nil
-                :license nil
-                :licenseUrl nil
-                )
-  (swaggered
-   "Meta"
-   :description "Information about API"
-   meta-api)
+(defroutes api-routes
+  (routes/with-routes
+    (swagger-ui "/")
+    (swagger-docs "/api/api-docs"
+                  :title "RuuviTracker REST API"
+                  :apiVersion "v1-dev"
+                  :description "RuuviTracker is an OpenSource Tracking System. See http://www.ruuvitracker.fi/ for more details."
+                  :termsOfServiceUrl nil
+                  :contact nil
+                  :license nil
+                  :licenseUrl nil
+                  )
+    (swaggered
+     "Meta"
+     :description "Information about API"
+     meta-api)
 
-  (swaggered
-   "Events"
-   :description "Query and store events and location data."
-   events-api)
+    (swaggered
+     "Events"
+     :description "Query and store events and location data."
+     events-api)
 
-  (swaggered
-   "Trackers"
-   :description "Query and configure tracking devices."
-   trackers-api)
+    (swaggered
+     "Trackers"
+     :description "Query and configure tracking devices."
+     trackers-api)
 
-  )
+    ))
 
 
 (defn wrap-component [handler event-service tracker-service]
@@ -133,23 +137,26 @@
       (handler req))))
 
 ;; TODO -> middleware.clj
-(defn wrap-log-exception
+(defn wrap-log-uncaught-exception
   "catch exception and log it"
   [handler & [opts]]
   (fn [request]
     (try
-      (info "handler" request)
-      (let [x (handler request)]
-        (info "res" x)
-        x)
+      (handler request)
+      (catch java.sql.SQLException e
+        ;; http://stackoverflow.com/questions/1988570/how-to-catch-a-specific-exceptions-in-jdbc
+        (when (.startsWith (.getSQLState e) "23")
+          (conflict! {:status 409
+                      :error "Entity already exists."}))
+        )
       (catch Exception e
-        (info "err")
         (error e "Uncaught exception")
-        (throw e)))
+        ))
     ))
 
 (defn api [event-service tracker-service]
   (-> api-routes
       (wrap-component event-service tracker-service)
-      wrap-log-exception)
+      wrap-log-uncaught-exception
+      api-middleware)
   )
