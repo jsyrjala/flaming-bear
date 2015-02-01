@@ -70,7 +70,7 @@
            ))
 
 
-(defn create-tracker [tracker-service new-tracker]
+(defn- create-tracker [tracker-service new-tracker]
   (let [created (tracker-service/store-tracker! *tracker-service* new-tracker)]
     (select-keys created
                  [:id
@@ -81,6 +81,21 @@
                   :created_on])
   ))
 
+(defn- get-tracker [tracker-service tracker-id]
+  (let [tracker (tracker-service/get-tracker *tracker-service* tracker-id)]
+    (if (not-empty tracker)
+      (select-keys tracker
+                   [:id
+                    :tracker_code
+                    :name
+                    :latest_activity
+                    :description
+                    :created_on])
+      (not-found! {:status 404
+                   :message "Tracker does not exist"})
+      )
+    )
+  )
 
 (defroutes* trackers-api
   (context "/api/v1-dev" []
@@ -97,7 +112,9 @@
                  :return Tracker
                  :summary "Fetch single tracker"
                  ;;(auth-tracker request tracker-id)
-                 (not-found! "not implemented yet")))
+                 (ok (get-tracker *tracker-service* tracker-id)))
+
+           )
   )
 
 (defroutes api-routes
@@ -157,6 +174,7 @@
 (defn api [event-service tracker-service]
   (-> api-routes
       (wrap-component event-service tracker-service)
-      wrap-log-uncaught-exception
+      ;; TODO improve
+      ;;wrap-log-uncaught-exception
       api-middleware)
   )

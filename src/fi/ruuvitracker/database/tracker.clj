@@ -3,7 +3,7 @@
             [clj-time.core :as clj-time]
             [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :refer [trace debug info warn] :as log]
-            [fi.ruuvitracker.database.db-util :refer [insert!] :as db-util]
+            [fi.ruuvitracker.database.db-util :refer [insert! get-by-id] :as db-util]
             )
   )
 
@@ -28,5 +28,7 @@
       (insert! conn :trackers db-tracker))
     ))
 
+(defn get-tracker [data-source-fn id]
+  (get-by-id (data-source-fn) :trackers id))
 
 

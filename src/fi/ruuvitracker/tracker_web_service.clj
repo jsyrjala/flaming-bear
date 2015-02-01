@@ -4,7 +4,9 @@
             [puppetlabs.trapperkeeper.core :as trapperkeeper]))
 
 (defprotocol TrackerService
-  (store-tracker! [this tracker]))
+  (store-tracker! [this tracker])
+  (get-tracker [this tracker-id])
+  )
 
 
 (trapperkeeper/defservice tracker-service
@@ -20,7 +22,13 @@
   (stop [this context]
     (log/info "Shutting down event service")
     context)
-  (store-tracker! [this tracker]
-                (info "storing tracker" tracker)
-                (tracker-dao/create-tracker! open-connection tracker)
-                ))
+  (store-tracker!
+   [this tracker]
+   (info "storing tracker" tracker)
+   (tracker-dao/create-tracker! open-connection tracker)
+   )
+  (get-tracker
+   [this tracker-id]
+   (tracker-dao/get-tracker open-connection tracker-id)
+   )
+  )

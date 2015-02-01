@@ -75,8 +75,9 @@
    (first
     (jdbc/query conn (sql/select * table predv))))
 
-(defn- get-by-id [conn table id]
-  (get-row conn table ["id = ?" id]))
+(defn get-by-id [conn table id]
+  (-> (get-row conn table ["id = ?" id])
+      remove-nils ))
 
 
 (defn insert! [conn table data]
