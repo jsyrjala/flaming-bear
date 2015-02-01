@@ -10,6 +10,10 @@
 
             [fi.ruuvitracker.event-web-service
              :refer [event-service]]
+            [fi.ruuvitracker.tracker-web-service
+             :refer [tracker-service]]
+            [fi.ruuvitracker.database.connection
+             :refer [data-source]]
 
             [fi.ruuvitracker.database.migration
               :refer [database-migrator]]
@@ -62,6 +66,8 @@
                              hello-service
                              api-web-service
                              event-service
+                             tracker-service
+                             data-source
                              database-migrator]
                             config)))
   (alter-var-root #'system tka/init)
@@ -89,7 +95,8 @@
 
 (defn reset []
   (stop)
-  (refresh :after 'user/go))
+  (refresh :after 'user/go)
+  :reset-ok)
 
 
 (defn wipe-database

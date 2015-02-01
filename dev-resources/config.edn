@@ -30,7 +30,8 @@
             ;; connection-pool
             :max-connections-per-partition 20
             :partition-count 4
-            :max-connections 80}
+            :max-connections 80
+            :connection-test-query "VALUES 1"}
   }
 
  :nrepl

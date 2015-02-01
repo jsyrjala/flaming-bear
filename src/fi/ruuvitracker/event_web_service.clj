@@ -1,6 +1,5 @@
 (ns fi.ruuvitracker.event-web-service
   (:require [clojure.tools.logging :refer (trace debug info warn error) :as log]
-            ;;[fi.ruuvitracker.server-core :as core]
             [puppetlabs.trapperkeeper.core :as trapperkeeper]))
 
 (defprotocol EventService
@@ -9,7 +8,7 @@
 
 (trapperkeeper/defservice event-service
   EventService
-  []
+  [[:DataSource open-connection]]
   (init [this context]
     (log/info "Initializing event service")
     context)

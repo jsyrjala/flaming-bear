@@ -14,6 +14,7 @@
              [Tracker NewTracker NewEvent] :as domain]
 
             [fi.ruuvitracker.event-web-service :as event-service]
+            [fi.ruuvitracker.tracker-web-service :as tracker-service]
 
             [clj-time.core :refer [now time-zone-for-id]]
             [clj-time.format :refer [formatter unparse]]
@@ -35,6 +36,10 @@
   ^{:doc ""}
   *event-service* )
 
+(def ^:dynamic
+  ^{:doc ""}
+  *tracker-service* )
+
 ;; TODO compojure-api doesn't support well splitting apis to many files
 
 ;; Meta
@@ -53,15 +58,44 @@
            (POST* "/events" [:as request]
                   :body [new-event NewEvent]
                   :summary "Store a new event"
-                  ;;(process-new-event *event-service* new-event)
-                  (info "eventserv" *event-service*)
+                  ;; TODO authenticate
+                  ;; TODO convert to internal format
                   (event-service/store-event! *event-service* new-event)
-                  (info "eventserv2" *event-service*)
-
+                  ;; TODO convert response to external format
                   (ok {:ok 1})
                   )
            ))
 
+
+(defn create-tracker [tracker-service new-tracker]
+  (let [created (tracker-service/store-tracker! *tracker-service* new-tracker)]
+    (select-keys created
+                 [:id
+                  :tracker_code
+                  :name
+                  :latest_activity
+                  :description
+                  :created_on])
+  ))
+
+
+(defroutes* trackers-api
+  (context "/api/v1-dev" []
+
+           (POST* "/trackers" []
+                  :body [new-tracker NewTracker]
+                  :return Tracker
+                  :summary "Create a new Tracker"
+
+                  (ok (create-tracker *tracker-service* new-tracker)))
+
+           (GET* "/trackers/:tracker-id" [:as request]
+                 :path-params [tracker-id :- Long]
+                 :return Tracker
+                 :summary "Fetch single tracker"
+                 ;;(auth-tracker request tracker-id)
+                 (not-found! "not implemented yet")))
+  )
 
 (defapi api-routes
   (swagger-ui "/")
@@ -84,15 +118,38 @@
    :description "Query and store events and location data."
    events-api)
 
+  (swaggered
+   "Trackers"
+   :description "Query and configure tracking devices."
+   trackers-api)
+
   )
 
 
-(defn wrap-component [handler event-service]
+(defn wrap-component [handler event-service tracker-service]
   (fn wrap-component-req [req]
-    (binding [*event-service* event-service]
+    (binding [*event-service* event-service
+              *tracker-service* tracker-service]
       (handler req))))
 
-(defn api [event-service]
+;; TODO -> middleware.clj
+(defn wrap-log-exception
+  "catch exception and log it"
+  [handler & [opts]]
+  (fn [request]
+    (try
+      (info "handler" request)
+      (let [x (handler request)]
+        (info "res" x)
+        x)
+      (catch Exception e
+        (info "err")
+        (error e "Uncaught exception")
+        (throw e)))
+    ))
+
+(defn api [event-service tracker-service]
   (-> api-routes
-      (wrap-component event-service))
+      (wrap-component event-service tracker-service)
+      wrap-log-exception)
   )

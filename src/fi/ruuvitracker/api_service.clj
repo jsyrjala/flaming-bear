@@ -13,6 +13,7 @@
   [[:ConfigService get-in-config]
    [:WebroutingService add-ring-handler get-route]
    EventService
+   TrackerService
    ]
 
   (init [this context]
@@ -20,11 +21,12 @@
     (let [url-prefix (get-route this)
           ;; this fetches actual service implementation
           ;; EventService is just a map to all functions in service
-          event-service (tk-services/get-service this :EventService)]
+          event-service (tk-services/get-service this :EventService)
+          tracker-service (tk-services/get-service this :TrackerService)]
       (add-ring-handler
        this
        (compojure/context url-prefix []
-                          (api event-service)
+                          (api event-service tracker-service)
                           ))
 
 
