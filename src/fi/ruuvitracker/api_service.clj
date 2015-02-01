@@ -31,6 +31,6 @@
          (let [host (get-in-config [:webserver :host])
                port (get-in-config [:webserver :port])
                url-prefix (get-route this)]
-              (log/infof "Api web service started; visit http://%s:%s%s/echo to check it out!"
+              (log/infof "Api web service started; visit http://%s:%s%s/ to check it out!"
                          host port url-prefix))
          context))

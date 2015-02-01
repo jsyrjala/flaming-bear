@@ -47,6 +47,7 @@
                  ]
 
   :profiles {:dev {:source-paths ["dev"]
+                   :resource-paths ["swagger-ui"]
                    :dependencies [[puppetlabs/trapperkeeper ~tk-version :classifier "test" :scope "test"]
                                   [puppetlabs/kitchensink ~ks-version :classifier "test" :scope "test"]
                                   [clj-http "1.0.1"]

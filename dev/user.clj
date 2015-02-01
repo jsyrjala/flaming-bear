@@ -1,6 +1,13 @@
 (ns user
   (:require [puppetlabs.trapperkeeper.services.webserver.jetty9-service
-              :refer [jetty9-service]]
+             :refer [jetty9-service]]
+            [puppetlabs.trapperkeeper.services.webrouting.webrouting-service
+             :refer [webrouting-service]]
+            [fi.ruuvitracker.server-service
+             :refer [hello-service]]
+            [fi.ruuvitracker.api-service
+             :refer [api-web-service]]
+
             [fi.ruuvitracker.database.migration
               :refer [database-migrator]]
             [puppetlabs.trapperkeeper.core :as tk]
@@ -48,6 +55,9 @@
   (alter-var-root #'system
                   (fn [_] (tk/build-app
                             [jetty9-service
+                             webrouting-service
+                             hello-service
+                             api-web-service
                              database-migrator]
                             config)))
   (alter-var-root #'system tka/init)
