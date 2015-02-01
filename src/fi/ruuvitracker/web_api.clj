@@ -31,7 +31,7 @@
                 )
   (comment
   (swaggered
-   "Meta"
+   "Meta2"
    :description "Information about API"
    (context "/api/v1-dev2" []
             (GET* "/ping" []

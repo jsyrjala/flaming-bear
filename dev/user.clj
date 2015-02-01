@@ -14,7 +14,7 @@
   {:global
    {:logging-config "dev-resources/logback-dev.xml"}
    :webserver {:host "localhost"
-               :port 8080}
+               :port 8081}
    :web-router-service
    {
     :fi.ruuvitracker.server-web-service/hello-web-service "/hello"
@@ -78,11 +78,11 @@
   (refresh :after 'user/go))
 
 
-(comment
 (defn wipe-database
   "Clears database."
   []
-  (liber.database.migration/migrate-backward (:migrator system))
-  (liber.database.migration/migrate-forward (:migrator system)))
+  (fi.ruuvitracker.database.migration/migrate-backward (-> (context) :services-by-id :DatabaseMigrator))
+  (fi.ruuvitracker.database.migration/migrate-forward (-> (context) :services-by-id :DatabaseMigrator))
+  :ok)
 
-  )
+
