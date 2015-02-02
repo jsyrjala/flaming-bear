@@ -5,7 +5,7 @@
             [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :refer [trace debug info warn] :as log]
             [fi.ruuvitracker.database.db-util
-             :refer [insert! get-by-id get-row current-sql-timestamp] :as db-util]
+             :refer [insert! get-by-id get-row] :as db-util]
             )
   )
 
@@ -62,8 +62,8 @@
 (defn update-session-activity! [conn session-id timestamp]
   ;; TODO use current_timestamp from db
    (jdbc/execute! conn
-                  ["update event_sessions set latest_event_time = greatest(?, latest_event_time), updated_at = ? where id = ?"
-                  (time-conv/to-sql-time timestamp) (current-sql-timestamp) session-id] ))
+                  ["update event_sessions set latest_event_time = greatest(?, latest_event_time), updated_at = current_timestamp where id = ?"
+                  (time-conv/to-sql-time timestamp) session-id] ))
 
 (defn get-or-create-session! [conn tracker-id session-code timestamp]
   ;; there may be a burst of events that start a session, than can
@@ -97,8 +97,8 @@
 (defn update-tracker-activity! [conn tracker-id timestamp]
   ;; TODO setting to event-time is correct?
   (jdbc/execute! conn
-                 ["update trackers set latest_activity = greatest(?, latest_activity), updated_at = ? where id = ?"
-                  (time-conv/to-sql-time timestamp) (current-sql-timestamp) tracker-id] ))
+                 ["update trackers set latest_activity = greatest(?, latest_activity), updated_at = current_timestamp where id = ?"
+                  (time-conv/to-sql-time timestamp) tracker-id] ))
 
 (defn create-event!
   [datasource-fn tracker event]

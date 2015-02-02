@@ -55,9 +55,6 @@
                      :default [k v]))
              sql-map)))
 
-;; TODO use timestamp in db instead
-(defn current-sql-timestamp [] (java.sql.Timestamp. (System/currentTimeMillis)))
-
 
 (defn to-domain [m]
   (map-func
