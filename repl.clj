@@ -1,4 +1,4 @@
-(require '[data :refer [get-tracker] :as data])
+(require '[data :refer [get-tracker get-event] :as data])
 
 
 (do
@@ -7,3 +7,6 @@
   (data/create-dataset1 (context)))
 
 (get-tracker (context) 1)
+
+
+(get-event (context) 1)

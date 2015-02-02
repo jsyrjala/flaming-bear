@@ -33,6 +33,11 @@
   (let [{:keys [TrackerService]} (-> :services-by-id context)]
     (t/get-tracker TrackerService tracker-id)))
 
+(defn get-event [context event-id]
+  (let [{:keys [EventService]} (-> :services-by-id context)]
+    (e/get-event EventService event-id)))
+
+
 (defn create-dataset1 [context]
   (let [tracker1-data
         {:name "my-tracker"

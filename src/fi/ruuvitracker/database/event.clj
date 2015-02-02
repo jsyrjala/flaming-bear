@@ -128,3 +128,11 @@
       ;;(pubsub/broadcast! pubsub-service :tracker tracker-id event)
       new-event
       )))
+
+
+;;;
+
+;; queries
+
+(defn get-event [conn id]
+  (db-util/to-domain (get-by-id conn :events id)))
