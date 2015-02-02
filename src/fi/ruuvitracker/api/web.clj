@@ -14,11 +14,11 @@
 
             [fi.ruuvitracker.api.domain
              :refer
-             [Tracker NewTracker NewEvent] :as domain]
+             [Tracker NewTracker Event NewEvent] :as domain]
 
             [fi.ruuvitracker.event-web-service :as event-service]
             [fi.ruuvitracker.tracker-web-service :as tracker-service]
-
+            [fi.ruuvitracker.api.conversion :as conv]
             [clj-time.core :refer [now time-zone-for-id]]
             [clj-time.format :refer [formatter unparse]]
             [clojure.tools.logging :refer (trace debug info warn error)]
@@ -56,15 +56,29 @@
                        :time (timestamp)}))
             ))
 
+
+(defn- get-event [event-service event-id]
+  (let [event (event-service/get-event event-service event-id)]
+    (if (not-empty event)
+      (conv/data->domain :event event)
+      (not-found! {:status 404
+                   :message "Event does not exist"})
+      )))
+
 (defn- create-event [event-service new-event]
   ;; TODO authenticate
   ;; TODO convert to internal format
   ;;
-  (event-service/store-event! event-service new-event nil)
-  )
+  (event-service/store-event! event-service new-event nil))
 
 (defroutes* events-api
   (context "/api/v1-dev" []
+           (GET* "/events/:event-id" [:as request]
+                 :path-params [event-id :- Long]
+                 :return Event
+                 :summary "Fetch single tracker"
+                 (ok (get-event *event-service* event-id)))
+
            (POST* "/events" [:as request]
                   :body [new-event NewEvent]
                   :summary "Store a new event"
@@ -86,28 +100,13 @@
 (defn- get-tracker [tracker-service tracker-id]
   (let [tracker (tracker-service/get-tracker *tracker-service* tracker-id)]
     (if (not-empty tracker)
-      (select-keys tracker
-                   [:id
-                    :tracker_code
-                    :name
-                    :latest_activity
-                    :description
-                    :created_on])
+      (conv/data->domain :tracker tracker)
       (not-found! {:status 404
                    :message "Tracker does not exist"})
-      )
-    )
-  )
+      )))
 
 (defroutes* trackers-api
   (context "/api/v1-dev" []
-
-           (POST* "/trackers" []
-                  :body [new-tracker NewTracker]
-                  :return Tracker
-                  :summary "Create a new Tracker"
-
-                  (ok (create-tracker *tracker-service* new-tracker)))
 
            (GET* "/trackers/:tracker-id" [:as request]
                  :path-params [tracker-id :- Long]
@@ -115,6 +114,12 @@
                  :summary "Fetch single tracker"
                  ;;(auth-tracker request tracker-id)
                  (ok (get-tracker *tracker-service* tracker-id)))
+
+           (POST* "/trackers" []
+                  :body [new-tracker NewTracker]
+                  :return Tracker
+                  :summary "Create a new Tracker"
+                  (ok (create-tracker *tracker-service* new-tracker)))
 
            )
   )

@@ -71,8 +71,10 @@
   ;;(util/try-times
   (let [existing-session (get-event-session-for-code conn tracker-id session-code)
         session-id (:id existing-session)]
+    (debug "existing-s" tracker-id session-id session-code existing-session)
     (if existing-session
       (do
+        (debug "update session" existing-session)
         (update-session-activity! conn session-id timestamp)
         existing-session)
       (create-session! conn tracker-id session-code timestamp)
@@ -135,4 +137,4 @@
 ;; queries
 
 (defn get-event [conn id]
-  (db-util/to-domain (get-by-id conn :events id)))
+  (get-by-id conn :events id))

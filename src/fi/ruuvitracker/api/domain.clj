@@ -26,6 +26,35 @@
    (optional-key :description) (describe String "Short description of tracker")
    })
 
+
+;; these are in random order
+;; needed because multilevel structures dont support (describe)
+(defschema EventLocation
+  {(optional-key :latitude) (describe Double "TODO")
+   (optional-key :longitude) (describe Double "TODO")
+   (optional-key :accuracy) (describe Double "TODO")
+   (optional-key :vertical_accuracy) (describe Double "TODO")
+   (optional-key :heading) (describe Double "Compass heading in degrees.")
+   (optional-key :satellite_count) (describe Long "TODO")
+   (optional-key :battery) (describe Double "TODO")
+   (optional-key :speed) (describe Double "Current speed of tracker in m/s")
+   (optional-key :altitude) (describe Double "Altitude in meters from sea level.")
+   (optional-key :temperature) (describe Double "In Celcius")
+   (optional-key :annotation) (describe String "Free form text that describes the event.")
+   })
+
+
+(defschema Event
+  {:id (describe Long "TODO")
+   :tracker_id (describe Long "TODO")
+   (optional-key :event_session_id) (describe Long "TODO")
+   :event_time (describe DateTime "TODO")
+   :store_time (describe DateTime "TODO")
+   ;;(optional-key :location) EventLocation
+   (optional-key :location) EventLocation
+   })
+
+
 (defschema NewEvent
   {:version (describe (enum "1") "Version number of Tracker API. Currently constant 1.")
    :tracker_code tracker_code?
