@@ -30,7 +30,8 @@
 (trapperkeeper/defservice data-source
   "doc"
   DataSource
-  [[:ConfigService get-in-config]]
+  [[:ConfigService get-in-config]
+   DatabaseMigrator]
   (init
    [this context]
    (let [db-spec (get-in-config [:database :db-spec])]

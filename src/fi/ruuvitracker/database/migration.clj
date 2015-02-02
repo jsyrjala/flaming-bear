@@ -238,6 +238,12 @@
   DatabaseMigrator
   [[:ConfigService get-in-config]]
 
+  (init [this context]
+         (when (get-in-config [:database :migration :enabled])
+           (info "Executing database migrations. Enabled in configuration.")
+           (migrate-forward this)
+           )
+        context)
   (migrate-forward [this]
                    (execute-migration (get-in-config [:database :db-spec])))
 

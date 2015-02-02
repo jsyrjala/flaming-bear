@@ -44,6 +44,7 @@
                  [clj-time "0.9.0"]
                  [org.clojure/tools.cli "0.3.1"]
                  [slingshot "0.12.1"]
+                 [org.clojure/tools.nrepl "0.2.7"]
                  ]
 
   :profiles {:dev {:source-paths ["dev"]

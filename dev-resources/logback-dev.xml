@@ -9,6 +9,7 @@
   <logger name="org.eclipse.jetty.util.log" level="warn"/>
   <logger name="h2database" level="error" />
   <logger name="fi.ruuvitracker" level="debug"/>
+  <logger name="h2database" level="off" />
 
   <root level="info">
     <appender-ref ref="STDOUT" />

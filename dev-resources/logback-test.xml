@@ -1,11 +1,12 @@
 <configuration scan="true">
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d %-5p [%c{2}] %m%n</pattern>
-        </encoder>
-    </appender>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d %-5p [%c{2}] %m%n</pattern>
+    </encoder>
+  </appender>
+  <logger name="h2database" level="off" />
 
-    <root level="error">
-        <appender-ref ref="STDOUT" />
-    </root>
+  <root level="error">
+    <appender-ref ref="STDOUT" />
+  </root>
 </configuration>
