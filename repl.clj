@@ -1,19 +1,9 @@
-(require '[data :as data])
-
-(reset)
+(require '[data :refer [get-tracker] :as data])
 
 
-(def tracker
-  {:name "t1"
-   :owner_id 1
-   :description "masan tracker"
-   :tracker_code "code1"
-   :shared_secret "passwrod"
-   }
-  )
-(data/create-tracker (context) tracker)
-(keys (context))
+(do
+  (reset)
+  (wipe-database)
+  (data/create-dataset1 (context)))
 
-(print-context)
-(wipe-database)
-
+(get-tracker (context) 1)

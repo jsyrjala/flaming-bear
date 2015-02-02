@@ -10,8 +10,6 @@
 
 
 (defn create-tracker! [data-source-fn tracker]
-  (info "insert-tracker!" (data-source-fn))
-
   (jdbc/with-db-transaction
     [conn (data-source-fn)]
     (let [owner-id 42 ;; TODO
@@ -24,7 +22,6 @@
                                           :description
                                           :public])
                        :owner_id owner-id)]
-      (info "insert" conn db-tracker tracker)
       (insert! conn :trackers db-tracker))
     ))
 

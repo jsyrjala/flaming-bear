@@ -34,7 +34,6 @@
   (init
    [this context]
    (let [db-spec (get-in-config [:database :db-spec])]
-     (info "conn" db-spec)
      (assoc context :pool {:datasource (make-hikari-pool db-spec)})))
 
   (stop [this context]
@@ -44,7 +43,6 @@
   (open-connection
    [this]
    (let [pool (-> (tk-services/service-context this) :pool)]
-     (info "open-connection called" pool)
      pool)
   ))
 

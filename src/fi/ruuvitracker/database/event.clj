@@ -109,7 +109,7 @@
           event-time (get event :event_time store-time)
           event (assoc event :event_time event-time)
           tracker-id (or (:id tracker tracker))
-          session-code (:session_code event "default")
+          session-code (or (:session_code event) "default")
           session (get-or-create-session! conn tracker-id session-code event-time)
           new-event (create-event-row! conn tracker-id (:id session) event)
           ext-values (find-ext-values event)

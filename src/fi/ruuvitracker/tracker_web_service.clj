@@ -24,7 +24,6 @@
     context)
   (store-tracker!
    [this tracker]
-   (info "storing tracker" tracker)
    (tracker-dao/create-tracker! open-connection tracker)
    )
   (get-tracker

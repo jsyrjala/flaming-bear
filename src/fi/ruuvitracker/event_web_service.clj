@@ -5,7 +5,7 @@
             [puppetlabs.trapperkeeper.core :as trapperkeeper]))
 
 (defprotocol EventService
-  (store-event! [this event tracker]))
+  (store-event! [this tracker event]))
 
 
 (trapperkeeper/defservice event-service
@@ -20,7 +20,7 @@
   (stop [this context]
     (log/info "Shutting down event service")
     context)
-  (store-event! [this event tracker]
-                (info "storing event" event)
-                (event-dao/create-event! open-connection event tracker)
+  (store-event! [this tracker event]
+                (info "storing event" tracker event )
+                (event-dao/create-event! open-connection tracker event)
                 ))
