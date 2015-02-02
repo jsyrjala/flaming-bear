@@ -24,7 +24,7 @@
                                           :description
                                           :public])
                        :owner_id owner-id)]
-      (info "insert" conn db-tracker)
+      (info "insert" conn db-tracker tracker)
       (insert! conn :trackers db-tracker))
     ))
 

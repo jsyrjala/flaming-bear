@@ -56,17 +56,19 @@
                        :time (timestamp)}))
             ))
 
+(defn- create-event [event-service new-event]
+  ;; TODO authenticate
+  ;; TODO convert to internal format
+  ;;
+  (event-service/store-event! event-service new-event nil)
+  )
+
 (defroutes* events-api
   (context "/api/v1-dev" []
            (POST* "/events" [:as request]
                   :body [new-event NewEvent]
                   :summary "Store a new event"
-                  ;; TODO authenticate
-                  ;; TODO convert to internal format
-                  (event-service/store-event! *event-service* new-event)
-                  ;; TODO convert response to external format
-                  (ok {:ok 1})
-                  )
+                  (ok (create-event *event-service* new-event)))
            ))
 
 

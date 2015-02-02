@@ -1,9 +1,11 @@
 (ns fi.ruuvitracker.event-web-service
   (:require [clojure.tools.logging :refer (trace debug info warn error) :as log]
+            [fi.ruuvitracker.database.event :as event-dao]
+
             [puppetlabs.trapperkeeper.core :as trapperkeeper]))
 
 (defprotocol EventService
-  (store-event! [this event]))
+  (store-event! [this event tracker]))
 
 
 (trapperkeeper/defservice event-service
@@ -18,6 +20,7 @@
   (stop [this context]
     (log/info "Shutting down event service")
     context)
-  (store-event! [this event]
+  (store-event! [this event tracker]
                 (info "storing event" event)
+                (event-dao/create-event! open-connection event tracker)
                 ))

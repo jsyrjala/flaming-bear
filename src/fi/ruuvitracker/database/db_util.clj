@@ -55,6 +55,8 @@
                      :default [k v]))
              sql-map)))
 
+;; TODO use timestamp in db instead
+(defn current-sql-timestamp [] (java.sql.Timestamp. (System/currentTimeMillis)))
 
 
 (defn to-domain [m]
@@ -71,7 +73,7 @@
                  [k v]))
              domain-map)))
 
-(defn- get-row [conn table predv]
+(defn get-row [conn table predv]
    (first
     (jdbc/query conn (sql/select * table predv))))
 
