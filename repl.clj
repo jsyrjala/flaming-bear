@@ -1,8 +1,7 @@
-(require '[data :refer [get-tracker get-event] :as data])
-
 
 (do
   (reset)
+  (require '[data :refer [get-tracker get-event] :as data])
   (wipe-database)
   (data/create-dataset1 (context)))
 
