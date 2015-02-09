@@ -12,6 +12,8 @@
              :refer [event-service]]
             [fi.ruuvitracker.tracker-web-service
              :refer [tracker-service]]
+            [fi.ruuvitracker.user-web-service
+             :refer [user-service]]
             [fi.ruuvitracker.database.connection
              :refer [data-source]]
 
@@ -67,6 +69,7 @@
                              api-web-service
                              event-service
                              tracker-service
+                             user-service
                              data-source
                              database-migrator]
                             config)))

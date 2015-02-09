@@ -4,7 +4,6 @@
             [fi.ruuvitracker.tracker-web-service :as t]
             [fi.ruuvitracker.event-web-service :as e]
             )
-
   )
 
 (defn event [tracker & opts]

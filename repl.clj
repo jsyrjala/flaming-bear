@@ -1,3 +1,4 @@
+(reset)
 
 (do
   (reset)

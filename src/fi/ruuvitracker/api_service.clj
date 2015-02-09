@@ -14,6 +14,7 @@
    [:WebroutingService add-ring-handler get-route]
    EventService
    TrackerService
+   UserService
    ]
 
   (init [this context]
@@ -22,13 +23,13 @@
           ;; this fetches actual service implementation
           ;; EventService is just a map to all functions in service
           event-service (tk-services/get-service this :EventService)
-          tracker-service (tk-services/get-service this :TrackerService)]
+          tracker-service (tk-services/get-service this :TrackerService)
+          user-service (tk-services/get-service this :UserService)]
       (add-ring-handler
        this
        (compojure/context url-prefix []
-                          (api event-service tracker-service)
+                          (api event-service tracker-service user-service)
                           ))
-
 
       (assoc context :url-prefix url-prefix)))
 

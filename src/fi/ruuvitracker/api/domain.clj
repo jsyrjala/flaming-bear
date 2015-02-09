@@ -76,3 +76,18 @@
    (optional-key :mac) mac?
    }
   )
+
+;; Users / login
+(defschema User
+  {:id (describe Long "TODO")
+   :name (describe String "TODO")})
+
+(defschema NewUser
+  {:name (describe String "TODO")
+   :username (describe String "TODO")
+   :password (describe String "TODO")
+   (optional-key :email) (describe String "TODO")})
+
+(defschema UserLogin
+  {:username (describe String "Username")
+   :password (describe String "Password")})

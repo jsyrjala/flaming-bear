@@ -14,10 +14,11 @@
 
             [fi.ruuvitracker.api.domain
              :refer
-             [Tracker NewTracker Event NewEvent] :as domain]
+             [Tracker NewTracker Event NewEvent User NewUser UserLogin] :as domain]
 
             [fi.ruuvitracker.event-web-service :as event-service]
             [fi.ruuvitracker.tracker-web-service :as tracker-service]
+            [fi.ruuvitracker.user-web-service :as user-service]
             [fi.ruuvitracker.api.conversion :as conv]
             [clj-time.core :refer [now time-zone-for-id]]
             [clj-time.format :refer [formatter unparse]]
@@ -42,6 +43,10 @@
 (def ^:dynamic
   ^{:doc ""}
   *tracker-service* )
+
+(def ^:dynamic
+  ^{:doc ""}
+  *user-service* )
 
 ;; TODO compojure-api doesn't support well splitting apis to many files
 
@@ -124,6 +129,33 @@
            )
   )
 
+(defroutes* users-api
+   (context "/api/v1-dev" []
+            (GET* "/users" []
+                  :summary "Get users"
+                  :return [User]
+                  (ok [{:not-implemented :yet}])
+                  )
+            (POST* "/users" []
+                   :summary "Register a new user"
+                   :body [new-user NewUser]
+                   :return User
+                   (ok [{:not-implemented :yet}]))
+
+            (GET* "/users/:user-id" []
+                  :path-params [user-id :- Long]
+                  :summary "Get user details"
+                  :return User
+                  (ok [{:not-implemented :yet}]))
+            (POST* "/auth-tokens" []
+                   :summary "Login user"
+                   :body [user-login UserLogin]
+                   (ok [{:not-implemented :yet}]))
+            (DELETE* "/auth-tokens" []
+                     :summary "Logout user"
+                     (ok ""))
+            ))
+
 (defroutes api-routes
   (routes/with-routes
     (swagger-ui "/")
@@ -151,13 +183,18 @@
      :description "Query and configure tracking devices."
      trackers-api)
 
+    (swaggered
+     "Users"
+     :description "Login and logout. New user registration."
+     users-api)
     ))
 
 
-(defn wrap-component [handler event-service tracker-service]
+(defn wrap-component [handler event-service tracker-service user-service]
   (fn wrap-component-req [req]
     (binding [*event-service* event-service
-              *tracker-service* tracker-service]
+              *tracker-service* tracker-service
+              *user-service* user-service]
       (handler req))))
 
 ;; TODO -> middleware.clj
@@ -178,9 +215,9 @@
         ))
     ))
 
-(defn api [event-service tracker-service]
+(defn api [event-service tracker-service user-service]
   (-> api-routes
-      (wrap-component event-service tracker-service)
+      (wrap-component event-service tracker-service user-service)
       ;; TODO improve
       ;;wrap-log-uncaught-exception
       api-middleware)
